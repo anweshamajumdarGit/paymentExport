@@ -90,34 +90,15 @@ docker compose down
 
 Database data is preserved in the Docker volume.
 
-# Diagram
+## Payment Export Pipeline Architecture
 
-
+```mermaid
 flowchart TD
-A["Docker Compose"] --> B["PostgreSQL Database"]
-A --> C["Spring Boot Application"]
-
-    B --> D[("payments table")]
-    B --> E[("exported_payments table")]
-
-    C --> F["GET /payments"]
-    F --> D
-    D --> G["Return payment records"]
-
-    G --> H["Spring Batch Job"]
-    H --> I["Filter payments"]
-    I --> J{"Status = ALLOCATED?"}
-
-    J -->|No| K["Skip payment"]
-    J -->|Yes| L["Prepare export request"]
-
-    L --> M["POST /exported-payments"]
-    M --> N["Validate request"]
-    N --> O["Save exported payment"]
-    O --> E
-
-    E --> P["Export record stored"]
-    P --> Q["Job completes"]
-
-    K --> Q
-
+    A["Docker Compose"] --> B["PostgreSQL"]
+    B --> C["payments table"]
+    C --> D["GET /payments"]
+    D --> E["Spring Batch Job"]
+    E --> F{"Status = ALLOCATED?"}
+    F -->|Yes| G["POST /exported-payments"]
+    F -->|No| H["Skip payment"]
+    G --> I["exported_payments table"]
