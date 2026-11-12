@@ -34,11 +34,21 @@ This command does five things:
 1. Downloads the PostgreSQL 16 image if it isn't already available.
 2. Creates a container named payment-postgres.
 3. Creates a database named payment_db.
-4. Creates the username postgres and password postgres123.
+4. Creates the username postgresAnwesha and password #######.
 5. Exposes PostgreSQL on port 5432 on your Mac.
 
 ### Check PostgreSQL logs:
     docker logs payment-postgres
 
+# Connect DBeaver to PostgreSQL
 
+
+# Spring Boot project
+### Select these dependencies from : https://start.spring.io/?utm_source=chatgpt.com
+        Spring Web
+        Spring Data JPA
+        Spring Batch
+        PostgreSQL Driver
+        Flyway Migration
+        Validation
 
