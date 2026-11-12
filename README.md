@@ -1,54 +1,123 @@
-# paymentExport
+# Payment Export Pipeline
 
-Installation in system :
+## Overview
 
-[x] Java JDK 21
-[x] IntelliJ IDEA
-[x] Docker Desktop
-[x] Git
-[x] Postman
-[x] DBeaver Community (will be used to view and verify PostgreSQL data)
+A small payment export pipeline built using Java 21,
+Spring Boot, Spring Batch and PostgreSQL.
 
-# Java
+The application retrieves payment records, selects
+payments with ALLOCATED status and exports them through
+a REST API.
 
-    java -version : java version "17.0.6" 2023-01-17 LTS
+## Technologies
 
-# Docker 
+- Java 21
+- Spring Boot
+- Spring Batch
+- Spring Data JPA
+- PostgreSQL
+- Flyway
+- Docker Compose
+- Maven
 
-    docker --version : Docker version 28.5.1, build e180ab8
+## Prerequisites
 
-    docker compose version : Docker Compose version v2.40.2-desktop.1
+- Java 21 (for local development)
+- Docker Desktop
+- Postman (optional)
+- DBeaver (optional)
 
-# PostgreSQL configuration
+## Start the application
 
-### Check whether the container is running:
-    docker ps
-### Create 
-    docker run --name payment-postgres \
-    -e POSTGRES_DB=payment_db \
-    -e POSTGRES_USER=postgresAnwesha \
-    -e POSTGRES_PASSWORD=postgresRoot \
-    -p 5432:5432 \
-    -d postgres:18
-This command does five things:
-1. Downloads the PostgreSQL 16 image if it isn't already available.
-2. Creates a container named payment-postgres.
-3. Creates a database named payment_db.
-4. Creates the username postgresAnwesha and password #######.
-5. Exposes PostgreSQL on port 5432 on your Mac.
+Run:
 
-### Check PostgreSQL logs:
-    docker logs payment-postgres
+docker compose up --build -d
 
-# Connect DBeaver to PostgreSQL
+Check services:
+
+docker compose ps
+
+## API endpoints
+
+GET /payments
+
+Retrieves all payment records.
+
+POST /exported-payments
+
+Stores an exported payment.
+
+POST /batch/run
+
+Starts the payment export batch job.
+
+## Run the batch job
+
+Send a POST request to:
+
+http://localhost:8080/batch/run
+
+The batch job:
+1. Calls GET /payments.
+2. Selects ALLOCATED payments.
+3. Calls POST /exported-payments
+   for each selected payment.
+
+## Verify exported payments
+
+Connect to PostgreSQL using DBeaver:
+
+Host: localhost
+Port: 5432
+Database: payment_db
+Username: postgres
+
+Execute:
+
+SELECT * FROM exported_payments;
+
+Expected result:
+
+PAY1001
+PAY1003
+PAY1005
+
+## Stop the application
+
+Run:
+
+docker compose down
+
+Database data is preserved in the Docker volume.
+
+# Diagram
 
 
-# Spring Boot project
-### Select these dependencies from : https://start.spring.io/?utm_source=chatgpt.com
-        Spring Web
-        Spring Data JPA
-        Spring Batch
-        PostgreSQL Driver
-        Flyway Migration
-        Validation
+flowchart TD
+A["Docker Compose"] --> B["PostgreSQL Database"]
+A --> C["Spring Boot Application"]
+
+    B --> D[("payments table")]
+    B --> E[("exported_payments table")]
+
+    C --> F["GET /payments"]
+    F --> D
+    D --> G["Return payment records"]
+
+    G --> H["Spring Batch Job"]
+    H --> I["Filter payments"]
+    I --> J{"Status = ALLOCATED?"}
+
+    J -->|No| K["Skip payment"]
+    J -->|Yes| L["Prepare export request"]
+
+    L --> M["POST /exported-payments"]
+    M --> N["Validate request"]
+    N --> O["Save exported payment"]
+    O --> E
+
+    E --> P["Export record stored"]
+    P --> Q["Job completes"]
+
+    K --> Q
 
