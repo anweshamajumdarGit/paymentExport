@@ -98,7 +98,7 @@ public class PaymentBatchConfig {
             JobRepository jobRepository,
             Step paymentExportStep) {
 
-        return new JobBuilder("paymentExportJob", jobRepository)
+            return new JobBuilder("paymentExportJob", jobRepository)
                 .start(paymentExportStep)
                 .build();
     }

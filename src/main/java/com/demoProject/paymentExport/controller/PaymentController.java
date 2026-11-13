@@ -1,19 +1,15 @@
 package com.demoProject.paymentExport.controller;
 
-
 import com.demoProject.paymentExport.dto.ExportPaymentRequest;
-import com.demoProject.paymentExport.entity.ExportedPayment;
 import com.demoProject.paymentExport.entity.Payment;
 import com.demoProject.paymentExport.service.PaymentService;
-import jakarta.validation.Valid;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -22,16 +18,23 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    @GetMapping("/payments")
-    public List<Payment> getPayments() {
-        return paymentService.getAllPayments();
+    // Get all exported payments
+    @GetMapping("/exported-payments")
+    public ResponseEntity<List<Payment>> getAllPayments() {
+
+        return ResponseEntity.ok(
+                paymentService.getAllPayments()
+        );
     }
 
+    // Insert or update exported payment
     @PostMapping("/exported-payments")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ExportedPayment exportPayment(
-            @Valid @RequestBody ExportPaymentRequest request) {
+    public ResponseEntity<Payment> exportPayment(
+            @RequestBody ExportPaymentRequest request) {
 
-        return paymentService.exportPayment(request);
+        Payment savedPayment =
+                paymentService.saveOrUpdate(request);
+
+        return ResponseEntity.ok(savedPayment);
     }
 }

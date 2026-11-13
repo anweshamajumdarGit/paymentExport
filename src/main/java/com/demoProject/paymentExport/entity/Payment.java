@@ -4,24 +4,29 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "payments")
+@Table(
+        name = "exported_payments",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_exported_payment_id",
+                        columnNames = "payment_id"
+                )
+        }
+)
 public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "payment_id", nullable = false, unique = true)
+    @Column(name = "payment_id", nullable = false)
     private String paymentId;
 
-    @Column(nullable = false, precision = 12, scale = 2)
+    @Column(name = "amount")
     private BigDecimal amount;
 
-    @Column(nullable = false, length = 3)
+    @Column(name = "currency")
     private String currency;
-
-    @Column(nullable = false, length = 30)
-    private String status;
 
     public Payment() {
     }
@@ -52,13 +57,5 @@ public class Payment {
 
     public void setCurrency(String currency) {
         this.currency = currency;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 }
