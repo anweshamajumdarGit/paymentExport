@@ -28,7 +28,7 @@ public class PaymentBatchConfig {
             JobRepository jobRepository,
             PlatformTransactionManager transactionManager,
             RestClient restClient) {
-
+// cron expression ; @Scheduled
         return new StepBuilder("paymentExportStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
 

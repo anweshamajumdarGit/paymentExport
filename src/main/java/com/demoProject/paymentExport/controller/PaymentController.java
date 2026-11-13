@@ -19,7 +19,7 @@ public class PaymentController {
     }
 
     // Get all exported payments
-    @GetMapping("/exported-payments")
+    @GetMapping("/payments")
     public ResponseEntity<List<Payment>> getAllPayments() {
 
         return ResponseEntity.ok(
@@ -37,4 +37,7 @@ public class PaymentController {
 
         return ResponseEntity.ok(savedPayment);
     }
+
+
+    // POST to add data : allocated + basic testcase
 }
